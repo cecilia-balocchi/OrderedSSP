@@ -1,6 +1,6 @@
 # Species Sampling Problems with Ordering
 
-This repository contains the code for the paper "A Bayesian Nonparametric Approach to Species Sampling Problems with Ordering" <!-- [arxiv](...) -->
+This repository contains the code for the paper "A Bayesian Nonparametric Approach to Species Sampling Problems with Ordering" (2022) by Balocchi, Camerlenghi and Favaro. <!-- [arxiv](...) -->
 
 ## Script to replicate numerical evaluation of the ordered PYP using synthetic and real data
 
@@ -32,7 +32,9 @@ The script `scripts/plot_BRCA_EDAR.R` produces the plots reported in the paper.
 ## Real data: citation data
 
 The citation data used are the ones described and analyzed in 
+
 > Ji, Pengsheng, and Jiashun Jin. "Coauthorship and citation networks for statisticians." The Annals of Applied Statistics 10.4 (2016): 1779-1812.
+
 Part of the dataset was available [here](https://www.stat.uga.edu/directory/people/pengsheng-ji), while the bibtex file was provided by the authors.
 
 Script `scripts/get_data_clean_bibtex.R` imports the bib file, extracts information and creates the order between the paper. Then estracts data related to citations, and saves the cleaned datasets in `data/` (included in `data/bibtex_clean.rdata` and `data/ordered_cit_data.rdata`).
