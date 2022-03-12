@@ -410,33 +410,20 @@ mtext("Prediction of K as a function of the number of samples", side = 3, line =
 dev.off()
 
 
-
-png("figures/median_W1curve_bibtex_CIform.png", width = 10, height = 2.5, units = "in", res = 300)
+png("figures/median_W1curveQ_bibtex.png", width = 10, height = 2.5, units = "in", res = 300)
 par(mfrow = c(1,5), oma = c(0, 0, 2, 0), mar= c(3.1,4.1,2.1,2.1))
 for(i_method in c(3,2,1,4,5)){
   i_seed = which.min(abs(W1curve_perr[,i_method] - median(W1curve_perr[,i_method])))
-
-  if(i_method == 4){
-    i_seed= sort(abs(W1curve_perr[,i_method] - median(W1curve_perr[,i_method])), decreasing = F, index.return=T)$ix[2]
-  }
-
   W1curve_est <- get(paste0("W1curve_",methods_str[i_method]))
-  CIs_est <- W1curveCIs_est
-
-  plot(W1ns, W1curve_true[i_seed,], type ="l", ylim = range(c(W1curve_est[i_seed,],W1curve_true[i_seed,])),
+  W1curve_mean <- W1curve_est[i_seed,]
+  # sds <- apply(W1curve_est, MARGIN = 2, sd)
+  lCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.025)
+  uCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.975)
+  plot(W1ns, W1curve_true[i_seed,], type ="l", ylim = range(c(W1curve_est,W1curve_true[i_seed,])),
        main = methods_str[i_method], xlab = "", ylab = "W1")
   mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
-
-  # W1ns_temp1 = c(1,1+which(CIs_est[i_method,-1,1]-CIs_est[i_method,-length(W1ns_CI),1]==1),length(W1ns_CI))
-  W1ns_temp2 = c(1,1+which(CIs_est[i_method,-1,2]-CIs_est[i_method,-length(W1ns_CI),2]==1),length(W1ns_CI))
-  # polygon(c( W1ns_CI[W1ns_temp2], rev(W1ns_CI[W1ns_temp1])),
-  #         c( CIs_est[i_method,W1ns_temp2,2], rev(CIs_est[i_method,W1ns_temp1,1]) ),
-  #         col = rgb(1,0,0,0.3), border = NA)
-  polygon(c( W1ns_CI[W1ns_temp2], rev(W1ns_CI)),
-          c( CIs_est[i_method,W1ns_temp2,2], rev(CIs_est[i_method,,1]) ),
-          col = rgb(1,0,0,0.3), border = NA)
-
-  lines(W1ns, W1curve_est[i_seed,], lwd = 2, col = "red")
+  polygon(c(rev(W1ns), W1ns),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
+  lines(W1ns, W1curve_mean, lwd = 2, col = "red")
   lines(W1ns, W1curve_true[i_seed,], lwd = 2)
 }
 mtext("Prediction of W1 as a function of the number of samples", side = 3, line = -0, cex = 1.2,outer = TRUE)
