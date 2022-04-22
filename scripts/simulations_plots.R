@@ -45,8 +45,9 @@ combined$param[combined$param == "W1_B1"] <- "W1|B1"
 
 combined$method[combined$method == "ord"] <- "ordPYP"
 combined$method[combined$method == "std"] <- "stdPYP"
+combined$method[combined$method == "lsX1"] <- "lsM1"
 
-combined$method <- factor(combined$method, levels = c("stdPYP","ordPYP","ordDP","lsX1","lsK"))
+combined$method <- factor(combined$method, levels = c("stdPYP","ordPYP","ordDP","lsM1","lsK"))
 
 
 

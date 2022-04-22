@@ -23,7 +23,8 @@ tmp_W1s_EDAR$variable = "W1"
 tmp_W1s_EDAR$data = "EDAR"
 
 results <- rbind(tmp_Ks_BRCA,tmp_Ks_EDAR,tmp_W1s_BRCA,tmp_W1s_EDAR)
-results$method <- factor(results$method, levels = c("stdPYP","ordPYP","ordDP","lsX1","lsK"))
+results$method[results$method == "lsX1"] <- "lsM1"
+results$method <- factor(results$method, levels = c("stdPYP","ordPYP","ordDP","lsM1","lsK"))
 
 p = ggplot(results) + geom_boxplot(aes(x = method, y = value)) +
   facet_nested( ~ variable+data, scale = "free") + scale_y_log10() + ylab("Percentage error")+

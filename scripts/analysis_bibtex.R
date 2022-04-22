@@ -3,6 +3,9 @@ library(optimization)
 wdstr <- ""
 source(paste0(wdstr,"scripts/funs.R"))
 
+methods_str <- c("ordDP","ordPYP","stdPYP","lsX1","lsK")
+methods_str2 <- c("ordDP","ordPYP","stdPYP","lsM1","lsK")
+
 tmp = load(paste0(wdstr,"data/bibtex_clean.rdata"))           # bibtex_data
 tmp1 = load(paste0(wdstr,"data/ordered_cit_data.rdata"))      # ordered_data
 path = "data/SCC2016/"
@@ -26,7 +29,6 @@ train_size <- round(n_obs/10)
 test_size <-  n_obs - train_size 
 N = train_size
 M = test_size
-methods_str <- c("ordDP","ordPYP","stdPYP","lsX1","lsK")
 X1ns <- floor(seq(1, N, length = 100))
 Kns <- floor(seq(1, N, length = 100))
 Kns_post <- floor(seq(1, M, length = 100))
@@ -386,9 +388,9 @@ save(list = c("Ks_perr","W1_perr","Kns_post","W1ns","Kns_post_CI","W1ns_CI","N",
               "median_seeds_W1curve","median_seeds_Kcurve",
               "Ks_curve_perr",paste0("Kcurve_",methods_str),#paste0("KcurveCIs_",methods_str),
               "Kcurve_true","Kcurve_avg"), 
-     file = "results/crossval_bibtex_CI.Rdata") # or without CI?
+     file = "results/crossval_bibtex.Rdata")
 
-tmp = load("results/crossval_bibtex_CI.Rdata")
+tmp = load("results/crossval_bibtex.Rdata")
 # using quantiles
 png("figures/median_KcurveQ_bibtex.png", width = 10, height = 2.5, units = "in", res = 300)
 par(mfrow = c(1,5), oma = c(0, 0, 2, 0), mar= c(3.1,4.1,2.1,2.1))
@@ -400,7 +402,7 @@ for(i_method in c(3,2,1,4,5)){
   lCI <- apply(Kcurve_est, MARGIN = 2, quantile, probs = 0.025)
   uCI <- apply(Kcurve_est, MARGIN = 2, quantile, probs = 0.975)
   plot(Kns_post, Kcurve_true[i_seed,], type ="l", ylim = range(c(Kcurve_est,Kcurve_true[i_seed,])),
-       main = methods_str[i_method], xlab = "", ylab = "W1")
+       main = methods_str2[i_method], xlab = "", ylab = "W1")
   mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
   polygon(c(rev(Kns_post), Kns_post),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
   lines(Kns_post, Kcurve_mean, lwd = 2, col = "red")
@@ -420,7 +422,7 @@ for(i_method in c(3,2,1,4,5)){
   lCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.025)
   uCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.975)
   plot(W1ns, W1curve_true[i_seed,], type ="l", ylim = range(c(W1curve_est,W1curve_true[i_seed,])),
-       main = methods_str[i_method], xlab = "", ylab = "W1")
+       main = methods_str2[i_method], xlab = "", ylab = "W1")
   mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
   polygon(c(rev(W1ns), W1ns),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
   lines(W1ns, W1curve_mean, lwd = 2, col = "red")
@@ -445,7 +447,8 @@ tmp_W1s_bibtex$variable = "W1"
 tmp_W1s_bibtex$data = "bibtex"
 
 results <- rbind(tmp_Ks_bibtex,tmp_W1s_bibtex)
-results$method <- factor(results$method, levels = c("stdPYP","ordPYP","ordDP","lsX1","lsK"))
+results$method[results$method == "lsX1"] <- "lsM1"
+results$method <- factor(results$method, levels = c("stdPYP","ordPYP","ordDP","lsM1","lsK"))
 
 p = ggplot(results) + geom_boxplot(aes(x = method, y = value)) +
   facet_nested( ~ variable, scale = "free") + scale_y_log10() + ylab("Percentage error")+

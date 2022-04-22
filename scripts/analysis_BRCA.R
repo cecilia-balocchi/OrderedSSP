@@ -4,6 +4,9 @@ library(optimization)
 source("scripts/funs.R")
 tmp = load("data/Gen1000_cleaned_BRCA.RData")
 
+methods_str <- c("ordDP","ordPYP","stdPYP","lsX1","lsK")
+methods_str2 <- c("ordDP","ordPYP","stdPYP","lsM1","lsK")
+
 set.seed(123)
 seeds <- sample(10000,size = 100)
 
@@ -16,7 +19,6 @@ train_size <- round(n_obs/20)
 test_size <-  n_obs - train_size 
 N = train_size
 M = test_size
-methods_str <- c("ordDP","ordPYP","stdPYP","lsX1","lsK")
 X1ns <- floor(seq(1, N, length = 100))
 Kns <- floor(seq(1, N, length = 100))
 Kns_post <- floor(seq(1, M, length = 25))
@@ -384,7 +386,7 @@ for(i_method in c(3,2,1,4,5)){
   lCI <- apply(Kcurve_est, MARGIN = 2, quantile, probs = 0.025)
   uCI <- apply(Kcurve_est, MARGIN = 2, quantile, probs = 0.975)
   plot(Kns_post, Kcurve_true[i_seed,], type ="l", ylim = range(c(Kcurve_est,Kcurve_true[i_seed,])),
-       main = methods_str[i_method], xlab = "", ylab = "W1")
+       main = methods_str2[i_method], xlab = "", ylab = "W1")
   mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
   polygon(c(rev(Kns_post), Kns_post),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
   lines(Kns_post, Kcurve_mean, lwd = 2, col = "red")
@@ -403,7 +405,7 @@ for(i_method in c(3,2,1,4,5)){
   lCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.025)
   uCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.975)
   plot(W1ns, W1curve_true[i_seed,], type ="l", ylim = range(c(W1curve_est,W1curve_true[i_seed,])),
-       main = methods_str[i_method], xlab = "", ylab = "W1")
+       main = methods_str2[i_method], xlab = "", ylab = "W1")
   mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
   polygon(c(rev(W1ns), W1ns),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
   lines(W1ns, W1curve_mean, lwd = 2, col = "red")

@@ -1,6 +1,6 @@
 # Species Sampling Problems with Ordering
 
-This repository contains the code for the paper "A Bayesian Nonparametric Approach to Species Sampling Problems with Ordering" (2022) by Balocchi, Camerlenghi and Favaro. <!-- [arxiv](...) -->
+This repository contains the code for the paper "A Bayesian Nonparametric Approach to Species Sampling Problems with Ordering" (2022) by Balocchi, Camerlenghi and Favaro [arxiv](https://arxiv.org/abs/2203.07342).
 
 ## Script to replicate numerical evaluation of the ordered PYP using synthetic and real data
 
@@ -11,7 +11,6 @@ Additionally, `scripts/fun_lgfact.cpp` contains a function to compute log genera
 
 Simulations were ran and analyzed using different scripts:
 - `scripts/simulation_from_model.R` calls `scripts/simulate_model.R` to generate sevaral synthetic datasets from the model; then analyzes and saves the results.
-	+ results3_tidy, [folder_str]
 - `scripts/simulation_from_dir.R` calls `scripts/simulate_dir.R` to generate sevaral synthetic datasets with a DP clustering distribution; then analyzes and saves the results.
 - `scripts/simulation_from_PYP.R` calls `scripts/simulate_pyp.R` to generate sevaral synthetic datasets with a PYP clustering distribution; then analyzes and saves the results.
 - `scripts/simulation_from_zipf.R` calls `scripts/simulate_zipf.R` to generate sevaral synthetic datasets with a Zipf clustering distribution; then analyzes and saves the results.
