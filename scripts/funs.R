@@ -780,3 +780,65 @@ Stirling1.all <- function(n)
   else get("S1.tab", .nacopEnv)[[n]]
 }
 
+
+
+posterior_MH_hyper <- function(ms, niter){
+  # ms are the data counts
+  rs <- cumsum(ms)
+  fun_ordEPPF_PY <- function(par,ms) -ordEPPF_PY(ms, par[1], par[2]) # par[1] = theta, par[2] = alpha
+  sigma_theta <- 0.3; sigma_alpha <- 0.3
+  a_theta <- 0.1; b_theta <- 0.1
+  a_alpha <- 1; b_alpha <- 1
+  tmp_nm <- error_safe(optim(par = c(1,0.5), fn = fun_ordEPPF_PY, ms = ms, method = "Nelder-Mead"))
+  # par0 <- c(tmp_nm$par[1],tmp_nm$par[2])
+  theta <- tmp_nm$par[1]
+  alpha <- tmp_nm$par[2]
+  ## I don't know which prior to use for theta and alpha. I guess we can set theta ~ Gamma(a,b) (and we could let a,b->0)
+  # This can be useful, but it does not say which values of a,b, maybe non informative?
+  # for alpha we can have ~ Beta(a,b)
+  thetas <- numeric(niter+1)
+  alphas <- numeric(niter+1)
+  acc_theta <- 0
+  acc_alpha <- 0
+  thetas[1] <- theta
+  alphas[1] <- alpha
+  for(iter in 1:niter){
+    ### theta first
+    # the proposal is a truncate (positive) normal with sd = sigma_theta
+    theta_star <- rnorm(1, mean = theta, sd = sigma_theta)
+    while(theta_star < 0) theta_star <- rnorm(1, mean = theta, sd = sigma_theta)
+    # the ratio of proposals 
+    loga <- dnorm(theta_star/sigma_theta, log = TRUE)-dnorm(theta/sigma_theta, log = TRUE)
+    # the ratio of prior
+    loga <- loga + dgamma(theta_star, shape = a_theta, rate = b_theta, log = TRUE) -
+                dgamma(theta, shape = a_theta, rate = b_theta, log = TRUE) 
+    # the ratio of likelihood
+    loga <- loga + sum(log(alpha*rs[-K] + theta_star*ms[-1])) - sum(log(alpha*rs[-K] + theta*ms[-1]))
+    loga <- loga - (risfact(theta_star+1,sum(ms)-1) - risfact(theta+1,sum(ms)-1) )
+    # accept or reject
+    if(log(runif(1,0,1))<loga){
+      theta <- theta_star
+      acc_theta <- acc_theta + 1
+    }
+    thetas[1+iter] <- theta
+    ### now alpha
+    # the proposal is a truncate (positive) normal with sd = sigma_alpha
+    alpha_star <- rnorm(1, mean = alpha, sd = sigma_alpha)
+    while(alpha_star < 0) alpha_star <- rnorm(1, mean = alpha, sd = sigma_alpha)
+    # the ratio of proposals 
+    loga <- dnorm(alpha_star/sigma_alpha, log = TRUE)-dnorm(alpha/sigma_alpha, log = TRUE)
+    # the ratio of prior
+    loga <- loga + dbeta(alpha_star, a_alpha, b_alpha, log = TRUE) -
+                dbeta(alpha, a_alpha, b_alpha, log = TRUE) 
+    # the ratio of likelihood
+    loga <- loga + sum(log(alpha_star*rs[-K] + theta*ms[-1])) - sum(log(alpha*rs[-K] + theta*ms[-1]))
+    loga <- loga + (sum(risfact(1-alpha_star, ms-1)) - sum(risfact(1-alpha, ms-1)) )
+    # accept or reject
+    if(log(runif(1,0,1))<loga){
+      alpha <- alpha_star
+      acc_alpha <- acc_alpha + 1
+    }
+    alphas[1+iter] <- alpha
+  }
+  return(list(thetas = thetas, alphas = alphas, acceptance = c(acc_theta,acc_alpha)/niter))
+}
