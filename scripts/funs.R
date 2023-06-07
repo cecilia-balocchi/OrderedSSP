@@ -116,9 +116,18 @@ ordEPPF_PY <- function(ms, theta, alpha){
 
 # \frac{\theta}{\alpha}[\frac{(\theta+\alpha)_{(n)}}{(\theta)_{(n)}}-1]
 EK_PY <- function(n, theta, alpha){
+  if(alpha < 1e-10) alpha <- 1e-8
   # compute the exact expectation of the number of clusters under the PY with a sample size of n
   theta/alpha * ( exp(risfact(theta+alpha,n) - risfact(theta, n))-1 )
 }
+# (k+\frac{\theta}{\alpha}) \left(\frac{(\theta+n+\alpha)_{(m)}}{(\theta+n)_{(m)}}-1\right).
+# k is the number of clusters in the first n. (x)_{m} = \prod_{i=0,..m-1} (x+i)
+
+Eunseen_PY <- function(n, m, K, theta, alpha){
+  if(alpha < 1e-10) alpha <- 1e-8
+  (K+theta/alpha) * ( exp(lgamma(theta+n+alpha+m)-lgamma(theta+n+alpha) - lgamma(theta+n+m)+lgamma(theta+n)) -1)
+}
+
 
 EPPF_PY <- function(es, theta, alpha){
   if((alpha < 0) || (alpha >= 1)) return(NA)
@@ -291,6 +300,7 @@ Const <- function(n, m, theta,alpha, x){
   C
 }
 pB1 <- function(n, m, theta,alpha){
+  # formula (34) 
   logp <- log(n/(n+m)) + lgamma(theta+n+1-alpha+m) - lgamma(theta+n+1-alpha)
   logp <- logp - lgamma(theta+n+m) + lgamma(theta+n)
   exp(logp)
@@ -785,30 +795,32 @@ Stirling1.all <- function(n)
 posterior_MH_hyper <- function(ms, niter){
   # ms are the data counts
   rs <- cumsum(ms)
+  K <- length(ms)
   fun_ordEPPF_PY <- function(par,ms) -ordEPPF_PY(ms, par[1], par[2]) # par[1] = theta, par[2] = alpha
+  # parameters of the proposal (sd of the truncated normal)
   sigma_theta <- 0.3; sigma_alpha <- 0.3
+  # parameters of the priors
   a_theta <- 0.1; b_theta <- 0.1
   a_alpha <- 1; b_alpha <- 1
+  # starting points:
   tmp_nm <- error_safe(optim(par = c(1,0.5), fn = fun_ordEPPF_PY, ms = ms, method = "Nelder-Mead"))
-  # par0 <- c(tmp_nm$par[1],tmp_nm$par[2])
   theta <- tmp_nm$par[1]
   alpha <- tmp_nm$par[2]
-  ## I don't know which prior to use for theta and alpha. I guess we can set theta ~ Gamma(a,b) (and we could let a,b->0)
-  # This can be useful, but it does not say which values of a,b, maybe non informative?
-  # for alpha we can have ~ Beta(a,b)
+  
   thetas <- numeric(niter+1)
   alphas <- numeric(niter+1)
   acc_theta <- 0
   acc_alpha <- 0
   thetas[1] <- theta
   alphas[1] <- alpha
+
   for(iter in 1:niter){
     ### theta first
     # the proposal is a truncate (positive) normal with sd = sigma_theta
     theta_star <- rnorm(1, mean = theta, sd = sigma_theta)
     while(theta_star < 0) theta_star <- rnorm(1, mean = theta, sd = sigma_theta)
     # the ratio of proposals 
-    loga <- dnorm(theta_star/sigma_theta, log = TRUE)-dnorm(theta/sigma_theta, log = TRUE)
+    loga <- pnorm(theta_star/sigma_theta, log = TRUE)-pnorm(theta/sigma_theta, log = TRUE)
     # the ratio of prior
     loga <- loga + dgamma(theta_star, shape = a_theta, rate = b_theta, log = TRUE) -
                 dgamma(theta, shape = a_theta, rate = b_theta, log = TRUE) 
@@ -826,7 +838,7 @@ posterior_MH_hyper <- function(ms, niter){
     alpha_star <- rnorm(1, mean = alpha, sd = sigma_alpha)
     while(alpha_star < 0) alpha_star <- rnorm(1, mean = alpha, sd = sigma_alpha)
     # the ratio of proposals 
-    loga <- dnorm(alpha_star/sigma_alpha, log = TRUE)-dnorm(alpha/sigma_alpha, log = TRUE)
+    loga <- pnorm(alpha_star/sigma_alpha, log = TRUE)-pnorm(alpha/sigma_alpha, log = TRUE)
     # the ratio of prior
     loga <- loga + dbeta(alpha_star, a_alpha, b_alpha, log = TRUE) -
                 dbeta(alpha, a_alpha, b_alpha, log = TRUE) 
