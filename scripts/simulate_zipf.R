@@ -11,7 +11,7 @@ results <- data.frame(batch = rep(batch, Nsim_post*sim_x_batch),
                       theta_ordDP = NA, alpha_ordDP = NA, 
                       theta_lsK = NA, alpha_lsK = NA, 
                       theta_lsX1 = NA, alpha_lsX1 = NA, 
-                      K = NA, X1 = NA, Kpost = NA, A1 = NA, W1 = NA)
+                      K = NA, X1 = NA, K2 = NA, A1 = NA, W1 = NA)
 W1_curves <- list()
 W1_curve_avgs <- list()
 res_fs <- list()
@@ -83,20 +83,16 @@ for(sim in sims){
   for(i_method in 1:5){
     str <- method_str[i_method]
     parameters <- get(paste0("parameters",str))
-    if(i_method == 3){
-      EK_f <- parameters[1] * log(n)
-      # EKpost_f <- parameters[1] * log(n+m) # the formula should condition on K, this is wrong.
-    } else {
-      EK_f <- EK_PY(n, parameters[1], parameters[2])
-      # EKpost_f <- EK_PY(n+m, parameters[1], parameters[2]) # the formula should condition on K, this is wrong.
-    }
+    EK_f <- EK_PY(n, parameters[1], parameters[2])
+    EK_nm_f <- EK_PY(n+m, parameters[1], parameters[2])
+    Eunseen_f <- Eunseen_PY(n,m,K, parameters[1], parameters[2])
     
     pA1_f <- pA1(n,m,parameters[1], parameters[2])
     EW1_f <- EW1(X1, n, m, parameters[1], parameters[2])
     EW1_A1_f <- EW1_A1(n,m,parameters[1], parameters[2])
     EW1_B1_f <- EW1_B1(X1,n,m,parameters[1], parameters[2])
     W1curve_f <- sapply(Ms, function(mi) EW1(X1, n,mi,parameters[1], parameters[2]))
-    res_f <- c(EK_f, EW1_f, pA1_f, EW1_A1_f, EW1_B1_f)
+    res_f <- c(EK_f, EW1_f, pA1_f, EW1_A1_f, EW1_B1_f,EK_nm_f,Eunseen_f) # at the end so they don't mess up the rest (for now)
     res_fs[[paste0(sim,str)]] <- res_f
     W1curve_fs[[paste0(sim,str)]] <- W1curve_f
   }
@@ -145,7 +141,7 @@ for(sim in sims){
                                              sum(x_post[1:x] == max(x_post[1:x])),
                                              sum(c(x_pre2,x_post[1:x]) == max_pre)))
     
-    results[(index-1)*Nsim_post + sim_post,"Kpost"] <- length(clusters$unique_clusters)
+    results[(index-1)*Nsim_post + sim_post,"K2"] <- length(clusters$unique_clusters)
     results[(index-1)*Nsim_post + sim_post,"A1"] <- A1
     results[(index-1)*Nsim_post + sim_post,"W1"] <- W1
     
