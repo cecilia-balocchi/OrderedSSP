@@ -116,7 +116,8 @@ ordEPPF_PY <- function(ms, theta, alpha){
 
 # \frac{\theta}{\alpha}[\frac{(\theta+\alpha)_{(n)}}{(\theta)_{(n)}}-1]
 EK_PY <- function(n, theta, alpha){
-  if(alpha < 1e-10) alpha <- 1e-8
+  alpha[alpha < 1e-10] <- 1e-8
+  # if(alpha < 1e-10) alpha <- 1e-8
   # compute the exact expectation of the number of clusters under the PY with a sample size of n
   theta/alpha * ( exp(risfact(theta+alpha,n) - risfact(theta, n))-1 )
 }
