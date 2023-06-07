@@ -326,11 +326,7 @@ for(i_method in 1:5){
       Mi_temp = Mi_temp + 100
       pi <- exp(sapply(lower_bound_temp:Mi_temp, function(x) lpW1_comb(x,X1,N,Mi,theta,alpha)))
     }
-    pi_sorted = sort(pi, decreasing = T)
-    threshold = min(pi_sorted[1:min(which(cumsum(pi_sorted) > 0.95))])
-    index_tmp = which(pi>=threshold)
-    index = (lower_bound_temp:Mi_temp)[index_tmp]
-    W1curveCIs_est[i_method,j,] <- c(min(which(index[-1]-index[-length(index)] == 1)),max(index))
+    W1curveCIs_est[i_method,j,] <- get_CI_general(pi, (lower_bound_temp:Mi_temp))
   }
 }
 ###
@@ -355,11 +351,7 @@ for(j in 1:length(W1ns)){
     Mi_temp = Mi_temp + 100
     pi <- colMeans(  exp(sapply(lower_bound_temp:Mi_temp, function(x) lpW1_comb(x,X1,N,Mi,theta,alpha)))  ) ## maybe?
   }
-  pi_sorted = sort(pi, decreasing = T)
-  threshold = min(pi_sorted[1:min(which(cumsum(pi_sorted) > 0.95))])
-  index_tmp = which(pi>=threshold)
-  index = (lower_bound_temp:Mi_temp)[index_tmp]
-  W1curveCIs_est[i_method,j,] <- c(min(which(index[-1]-index[-length(index)] == 1)),max(index))
+  W1curveCIs_est[i_method,j,] <- get_CI_general(pi, (lower_bound_temp:Mi_temp))
 }
 ### end i_method= 6
 
