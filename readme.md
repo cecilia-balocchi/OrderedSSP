@@ -10,10 +10,11 @@ Additionally, `scripts/fun_lgfact.cpp` contains a function to compute log genera
 ## Simulations
 
 Simulations were ran and analyzed using different scripts:
-- `scripts/simulation_from_model.R` calls `scripts/simulate_model.R` to generate sevaral synthetic datasets from the model; then analyzes and saves the results.
-- `scripts/simulation_from_dir.R` calls `scripts/simulate_dir.R` to generate sevaral synthetic datasets with a DP clustering distribution; then analyzes and saves the results.
-- `scripts/simulation_from_PYP.R` calls `scripts/simulate_pyp.R` to generate sevaral synthetic datasets with a PYP clustering distribution; then analyzes and saves the results.
-- `scripts/simulation_from_zipf.R` calls `scripts/simulate_zipf.R` to generate sevaral synthetic datasets with a Zipf clustering distribution; then analyzes and saves the results.
+- `scripts/simulation_from_model.R` calls `scripts/simulate_model.R` and `scripts/simulate_model_FB.R` to generate sevaral synthetic datasets from the model; then analyzes and saves the results.
+- `scripts/simulation_from_dir.R` calls `scripts/simulate_dir.R` and `scripts/simulate_dir_FB.R` to generate sevaral synthetic datasets with a DP clustering distribution; then analyzes and saves the results.
+- `scripts/simulation_from_PYP.R` calls `scripts/simulate_pyp.R` and `scripts/simulate_pyp_FB.R` to generate sevaral synthetic datasets with a PYP clustering distribution; then analyzes and saves the results.
+- `scripts/simulation_from_zipf.R` calls `scripts/simulate_zipf.R` and `scripts/simulate_zipf_FB.R` to generate sevaral synthetic datasets with a Zipf clustering distribution; then analyzes and saves the results.
+(Note, the files ending in `_FB.R` implement the full Bayes approach.)
 	
 The script `scripts/simulations_plots.R` is used to combine the results and produce plots and tables.
 
@@ -36,6 +37,6 @@ The citation data used are the ones described and analyzed in
 
 Part of the dataset was available [here](https://www.stat.uga.edu/directory/people/pengsheng-ji), while the bibtex file was provided by the authors.
 
-Script `scripts/get_data_clean_bibtex.R` imports the bib file, extracts information and creates the order between the paper. Then estracts data related to citations, and saves the cleaned datasets in `data/` (included in `data/bibtex_clean.rdata` and `data/ordered_cit_data.rdata`).
+Script `scripts/get_data_clean_bibtex.R` imports the bib file, extracts information and creates the order between the paper. Then it extracts data related to citations, and saves the cleaned datasets in `data/` (included in `data/bibtex_clean.rdata` and `data/ordered_cit_data.rdata`).
 
 To analyze this data and produce the plots included in the manuscript, run the scripts `scripts/analysis_bibtex.R`.
