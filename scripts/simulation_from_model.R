@@ -233,4 +233,4 @@ results3_tidy$RMSE <- as.numeric(results3_tidy$RMSE)
 ######################################################
 ######################################################
 
-save(list = c("results3_tidy","results_all"), file = "results/results_model_FB.Rdata")
+save(list = c("results3_tidy","results_all"), file = "results/results_model.Rdata")

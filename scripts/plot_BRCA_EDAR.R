@@ -1,9 +1,9 @@
 rm(list = ls())
 methods_str <- c("ordDP","ordPYP","stdPYP","lsX1","lsK")
-tmp = load("results/crossval_BRCA_FB.Rdata")
+tmp = load("results/crossval_BRCA.Rdata")
 Ks_perr_BRCA <- Ks_perr
 W1_perr_BRCA <- W1_perr
-tmp = load("results/crossval_EDAR_FB.Rdata")
+tmp = load("results/crossval_EDAR.Rdata")
 Ks_perr_EDAR <- Ks_perr
 W1_perr_EDAR <- W1_perr
 

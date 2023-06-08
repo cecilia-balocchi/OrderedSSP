@@ -379,7 +379,7 @@ save(list = c("Ks_perr","W1_perr","Kns_post","W1ns","Kns_post_CI","W1ns_CI","N",
               "median_seeds_W1curve","median_seeds_Kcurve",
               "Ks_curve_perr",paste0("Kcurve_",methods_str),#paste0("KcurveCIs_",methods_str),
               "Kcurve_true","Kcurve_avg"), 
-     file = "results/crossval_bibtex_FB.Rdata")
+     file = "results/crossval_bibtex.Rdata")
 
 
 ## we don't use these for the analysis
@@ -404,60 +404,11 @@ save(list = c("Ks_perr","W1_perr","Kns_post","W1ns","Kns_post_CI","W1ns_CI","N",
 # }
 
 
-# save(list = c("Ks_perr","W1_perr","Kns_post","W1ns","Kns_post_CI","W1ns_CI","N","M","alphas","thetas",
-#               "W1curve_perr",paste0("W1curve_",methods_str),#paste0("CIs_",methods_str), 
-#               "W1curve_true", "W1curve_avg",
-#               "KcurveCIs_est","W1curveCIs_est",
-#               "median_seeds_W1curve","median_seeds_Kcurve",
-#               "Ks_curve_perr",paste0("Kcurve_",methods_str),#paste0("KcurveCIs_",methods_str),
-#               "Kcurve_true","Kcurve_avg"), 
-#      file = "results/crossval_bibtex.Rdata")
+# using empirical quantiles
+## FB
 # tmp = load("results/crossval_bibtex.Rdata")
 
-
-# using empirical quantiles
 png("figures/median_KcurveQ_bibtex.png", width = 10, height = 2.5, units = "in", res = 300)
-par(mfrow = c(1,5), oma = c(0, 0, 2, 0), mar= c(3.1,4.1,2.1,2.1))
-for(i_method in c(3,2,1,4,5)){
-  i_seed = which.min(abs(Ks_curve_perr[,i_method] - median(Ks_curve_perr[,i_method])))
-  Kcurve_est <- get(paste0("Kcurve_",methods_str[i_method]))
-  Kcurve_mean <- Kcurve_est[i_seed,]
-  lCI <- apply(Kcurve_est, MARGIN = 2, quantile, probs = 0.025)
-  uCI <- apply(Kcurve_est, MARGIN = 2, quantile, probs = 0.975)
-  plot(Kns_post, Kcurve_true[i_seed,], type ="l", ylim = range(c(Kcurve_est,Kcurve_true[i_seed,])),
-       main = methods_str2[i_method], xlab = "", ylab = "W1")
-  mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
-  polygon(c(rev(Kns_post), Kns_post),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
-  lines(Kns_post, Kcurve_mean, lwd = 2, col = "red")
-  lines(Kns_post, Kcurve_true[i_seed,], lwd = 2)
-}
-mtext("Prediction of K as a function of the number of samples", side = 3, line = -0, cex = 1.2,outer = TRUE)
-dev.off()
-
-
-png("figures/median_W1curveQ_bibtex.png", width = 10, height = 2.5, units = "in", res = 300)
-par(mfrow = c(1,5), oma = c(0, 0, 2, 0), mar= c(3.1,4.1,2.1,2.1))
-for(i_method in c(3,2,1,4,5)){
-  i_seed = which.min(abs(W1curve_perr[,i_method] - median(W1curve_perr[,i_method])))
-  W1curve_est <- get(paste0("W1curve_",methods_str[i_method]))
-  W1curve_mean <- W1curve_est[i_seed,]
-  # sds <- apply(W1curve_est, MARGIN = 2, sd)
-  lCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.025)
-  uCI <- apply(W1curve_est, MARGIN = 2, quantile, probs = 0.975)
-  plot(W1ns, W1curve_true[i_seed,], type ="l", ylim = range(c(W1curve_est,W1curve_true[i_seed,])),
-       main = methods_str2[i_method], xlab = "", ylab = "W1")
-  mtext("samples", side = 1, line = 2, cex = 0.8,outer = FALSE)
-  polygon(c(rev(W1ns), W1ns),c(rev(lCI), uCI), col = rgb(1,0,0,0.3), border = NA)
-  lines(W1ns, W1curve_mean, lwd = 2, col = "red")
-  lines(W1ns, W1curve_true[i_seed,], lwd = 2)
-}
-mtext("Prediction of W1 as a function of the number of samples", side = 3, line = -0, cex = 1.2,outer = TRUE)
-dev.off()
-
-## FB
-# tmp = load("results/crossval_bibtex_FB.Rdata")
-
-png("figures/median_KcurveQ_bibtex_FB.png", width = 10, height = 2.5, units = "in", res = 300)
 par(mfrow = c(1,6), oma = c(0, 0, 2, 0), mar= c(3.1,4.1,2.1,2.1))
 for(i_method in c(6,2,1,3,4,5)){
   i_seed = which.min(abs(Ks_curve_perr[,i_method] - median(Ks_curve_perr[,i_method])))
@@ -476,7 +427,7 @@ mtext("Prediction of K as a function of the number of samples", side = 3, line =
 dev.off()
 
 
-png("figures/median_W1curveQ_bibtex_FB.png", width = 10, height = 2.5, units = "in", res = 300)
+png("figures/median_W1curveQ_bibtex.png", width = 10, height = 2.5, units = "in", res = 300)
 par(mfrow = c(1,6), oma = c(0, 0, 2, 0), mar= c(3.1,4.1,2.1,2.1))
 for(i_method in c(6,2,1,3,4,5)){
   i_seed = which.min(abs(W1curve_perr[,i_method] - median(W1curve_perr[,i_method])))
@@ -496,7 +447,7 @@ dev.off()
 
 ####
 
-tmp = load("results/crossval_bibtex_FB.Rdata")
+# tmp = load("results/crossval_bibtex.Rdata")
 Ks_perr_bibtex <- Ks_perr
 W1_perr_bibtex <- W1_perr
 
@@ -519,7 +470,7 @@ p = ggplot(results) + geom_boxplot(aes(x = method, y = value)) +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   ggtitle("Predictive performance on real data")
 p
-ggsave(filename = "bibtex_crossval_FB.png", plot = p, device = "png", path = "figures",
+ggsave(filename = "bibtex_crossval.png", plot = p, device = "png", path = "figures",
        width = 5, height = 3)
 
 

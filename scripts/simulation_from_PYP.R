@@ -220,4 +220,4 @@ for(order_str in c("arrival_weight", "astable")){
 }
 results3_tidy <- rbind(results3_tidy_astable, results3_tidy_arrival_weight)
 
-save(list = c("results3_tidy","results_comb"), file = "results/results_PYP_FB.Rdata")
+save(list = c("results3_tidy","results_comb"), file = "results/results_PYP.Rdata")

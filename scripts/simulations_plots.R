@@ -4,20 +4,16 @@ library(dplyr)
 library(ggplot2)
 library(ggh4x)
 
-# tmp = load("results/results_model.Rdata")
-tmp = load("results/results_model_FB.Rdata")
+tmp = load("results/results_model.Rdata")
 results_model <- results3_tidy
 data_model <- results_all
-# tmp = load("results/results_DP.Rdata")
-tmp = load("results/results_DP_FB.Rdata")
+tmp = load("results/results_DP.Rdata")
 results_DP <- results3_tidy
 data_DP <- results_comb
-# tmp = load("results/results_PYP.Rdata")
-tmp = load("results/results_PYP_FB.Rdata")
+tmp = load("results/results_PYP.Rdata")
 results_PYP <- results3_tidy
 data_PYP <- results_comb
-# tmp = load("results/results_zipf.Rdata") ## note: this is infinite zipf (zeta distr), not finzipf (finite zipf)
-tmp = load("results/results_zipf_FB.Rdata")
+tmp = load("results/results_zipf.Rdata") ## note: this is infinite zipf (zeta distr), not finzipf (finite zipf)
 results_zipf <- results3_tidy
 data_zipf <- results_comb
 
@@ -58,20 +54,7 @@ combined$method <- factor(combined$method, levels = c("FB","ordPYP","ordDP","std
 
 ##########################################################################################
 ##########################################################################################
-p1 = ggplot(combined %>% filter(error == "percentage") %>% 
-              filter(param %in% c("W1","K","W1|A1","W1|B1")) %>%
-              group_by(method,param,order,distr,sim) %>% 
-              summarize(RMSE = median(RMSE, na.rm = T))) + 
-  geom_boxplot(aes(x = method, y = RMSE), outlier.size = 0.1) +scale_y_log10() +
-  facet_nested(param ~ order + distr , scale = "free") + 
-  ylab("Percentage error")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  ggtitle("Predictive performance under misspecification")
-p1
-ggsave(filename = "misspec_simulation_group_median.png", plot = p1, device = "png", path = "figures", 
-       width = 8, height = 6)
-##########################################################################################
-#### remove "model"
+#### "misspecified" simulations only (no "model")
 p1 = ggplot(combined %>% filter(error == "percentage") %>% 
               filter(param %in% c("W1","K","W1|A1","W1|B1")) %>%
               filter(order != "model") %>%
@@ -83,7 +66,7 @@ p1 = ggplot(combined %>% filter(error == "percentage") %>%
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   ggtitle("Predictive performance under misspecification")
 p1
-ggsave(filename = "misspec_simulation_group_median_nomodel2.png", plot = p1, device = "png", path = "figures", 
+ggsave(filename = "misspec_simulation_group_median_nomodel.png", plot = p1, device = "png", path = "figures", 
        width = 8, height = 6)
 ##########################################################################################
 ##########################################################################################
@@ -92,12 +75,11 @@ p2 = ggplot(combined %>% filter(error == "percentage",distr  == "model") %>%
               group_by(method,param,order,distr,sim) %>% 
               summarize(RMSE = median(RMSE, na.rm = T))) + 
   geom_boxplot(aes(x = method, y = RMSE), outlier.size = 0.1) + scale_y_log10() +
-  # facet_grid( ~ param, scales = "free") + 
   facet_wrap(~param, ncol = 4) + ylab("Percentage error")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   ggtitle("Predictive performance under correct specification")
 p2
-ggsave(filename = "model_simulation_group_median2.png", plot = p2, device = "png", path = "figures", 
+ggsave(filename = "model_simulation_group_median.png", plot = p2, device = "png", path = "figures", 
        width = 8, height = 2.5)
 
 
@@ -126,17 +108,6 @@ library(kableExtra)
 temp1b = pivot_wider(tmp1b, 
             names_from = c("order","distr"),
             values_from = "RMSE")
-# temp1b2 <- rbind(temp1b[1,],
-#                  temp1b[1:6,])
-# for(i in 2:4){
-#   temp1b2 <- rbind(temp1b2, 
-#                    temp1b[(i-1)*6+1,],
-#                    temp1b[(i-1)*6+1:6,])
-# }
-# dim(temp1b2)
-# temp1b2 <- temp1b2[,-1]
-# kbl(temp1b2, booktabs = T, format = "latex", digits = 3) %>% kable_styling(latex_options = "striped")
-
 
 kbl(temp1b[,-1], booktabs = T, format = "latex", digits = 3) %>% kable_styling(latex_options = "striped")
 
