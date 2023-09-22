@@ -40,3 +40,4 @@ Part of the dataset was available [here](https://www.stat.uga.edu/directory/peop
 Script `scripts/get_data_clean_bibtex.R` imports the bib file, extracts information and creates the order between the paper. Then it extracts data related to citations, and saves the cleaned datasets in `data/` (included in `data/bibtex_clean.rdata` and `data/ordered_cit_data.rdata`).
 
 To analyze this data and produce the plots included in the manuscript, run the scripts `scripts/analysis_bibtex.R`.
+
