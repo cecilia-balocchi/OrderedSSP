@@ -85,10 +85,12 @@ qj_new <- function(j, ms, theta, alpha, rs = NULL){
     logpr = -log(theta+n) -log(1+rs[j]) # first term put later: log(theta+alpha*rs[j])
     ind1 = 1:(j-2) # removed term j-1
     ind2 = 1+ind1
-    logpr = logpr +
-      sum(log(rs[ind1])-log(1+rs[ind1])) +
-      sum(log(alpha * rs[ind2] + alpha + theta*ms[ind1])) -
-      sum(log(alpha * rs[ind2] + theta*ms[ind1]))
+    if(j>2){
+      logpr = logpr +
+        sum(log(rs[ind1])-log(1+rs[ind1])) +
+        sum(log(alpha * rs[ind2] + alpha + theta*ms[ind1])) -
+        sum(log(alpha * rs[ind2] + theta*ms[ind1]))
+    }
     # this is term j-1
     logpr = logpr +
       sum(log(rs[j-1])-log(1+rs[j-1])) +
